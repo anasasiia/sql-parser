@@ -13,10 +13,7 @@ public class Parser {
    public static Query query = new Query();
 
     public static void parse(String line) throws IOException {
-        line = line.replace(",", " ,");
-        line = line.replace("(", "");
-        line = line.replace(")", "");
-        line = line.replace("'", "");
+        line = prepareLine(line);
 
         String[] arg = line.split(" ");
 
@@ -51,23 +48,25 @@ public class Parser {
         }
     }
 
-//    private static String replaceSymbols(String line, String oldSymbol, String newSymbol) {
-//        int oldSymbolLength = oldSymbol.length();
-//        StringBuilder stringBuilder = new StringBuilder(line);
-//
-//        for (int i = 0; i < line.length(); i++) {
-//            int index = stringBuilder.indexOf(oldSymbol, i);
-//
-//            if (index == -1) {
-//                if (i == 0) {
-//                    return line;
-//                }
-//                return stringBuilder.toString();
-//            }
-//            stringBuilder.replace(index, index + oldSymbolLength, newSymbol);
-//        }
-//        return stringBuilder.toString();
-//    }
+    private static String prepareLine(String line) {
+        line = replaceSymbols(line,",", " ,");
+        line = replaceSymbols(line,"(", "");
+        line = replaceSymbols(line, ")", "");
+        line = replaceSymbols(line, "'", "");
+        return line;
+    }
+
+    private static String replaceSymbols(String line, String oldSymbol, String newSymbol) {
+        int oldSymbolLength = oldSymbol.length();
+        StringBuilder stringBuilder = new StringBuilder(line);
+
+        for (int i = 0; i < line.length(); i++) {
+            if (oldSymbol.equals(String.valueOf(line.charAt(i)))) {
+                stringBuilder.replace(i, i + oldSymbolLength, newSymbol);
+            }
+        }
+        return stringBuilder.toString();
+    }
 
     public static Query getQuery() {
         return query;
