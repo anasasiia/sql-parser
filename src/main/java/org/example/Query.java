@@ -85,61 +85,74 @@ public class Query {
 
     public String toString() {
         String columns = "columns: ";
-        for (int i = 0; i < getSelections().size(); i++) {
-            if (getSelections().get(i).getName() != null) {
-                columns += getSelections().get(i).getName() + " ";
-            }
-            if (getSelections().get(i).getTableAndColumnName() != null) {
-                if (getSelections().get(i).getTableAndColumnName().containsValue("empty")) {
-                    columns += getSelections().get(i).getTableAndColumnName().keySet() + " ";
-                } else {
-                    columns += getSelections().get(i).getTableAndColumnName().toString() + " ";
+        if (getSelections() != null) {
+            for (int i = 0; i < getSelections().size(); i++) {
+                if (getSelections().get(i).getName() != null) {
+                    columns += getSelections().get(i).getName() + " ";
+                }
+                if (getSelections().get(i).getTableAndColumnName() != null) {
+                    if (getSelections().get(i).getTableAndColumnName().containsValue("empty")) {
+                        columns += getSelections().get(i).getTableAndColumnName().keySet() + " ";
+                    } else {
+                        columns += getSelections().get(i).getTableAndColumnName().toString() + " ";
+                    }
                 }
             }
         }
 
         String sources = "from sources: ";
-        for (int i = 0; i < getFromSources().size(); i++) {
-            if (getFromSources().get(i).getTableName() != null) {
-                sources = sources + "name of the table source " + getFromSources().get(i).getTableName() + " ";
-            }
-            if (getFromSources().get(i).getNestedQuery() != null) {
-                sources = sources + "nested query " +
-                        getFromSources().get(i).getNestedQuery().getSelections().get(0).getName() + " "
-                        + getFromSources().get(i).getNestedQuery().getSelections().get(0).getTableAndColumnName() + " ";
-            }
-            if (getFromSources().get(i).getAlias() != null) {
-                sources = sources + "alias name " + getFromSources().get(i).getAlias() + " ";
+        if (getFromSources() != null) {
+            for (int i = 0; i < getFromSources().size(); i++) {
+                if (getFromSources().get(i).getTableName() != null) {
+                    sources = sources + "name of the table source " + getFromSources().get(i).getTableName() + " ";
+                }
+                if (getFromSources().get(i).getNestedQuery() != null) {
+                    sources = sources + "nested query " +
+                            getFromSources().get(i).getNestedQuery().getSelections().get(0).getName() + " "
+                            + getFromSources().get(i).getNestedQuery().getSelections().get(0).getTableAndColumnName() + " ";
+                }
+                if (getFromSources().get(i).getAlias() != null) {
+                    sources = sources + "alias name " + getFromSources().get(i).getAlias() + " ";
+                }
             }
         }
 
         String joins = "how to join: ";
-        for (int i = 0; i < getJoins().size(); i++) {
-            joins = joins + "joint type " + getJoins().get(i).getJoinType() + " ";
-            joins = joins + "what table to join " + getJoins().get(i).getWhatTableToJoin() + " ";
-            if (!getJoins().get(i).getJoinType().equals("CROSS")) {
-                joins = joins + "table where to join " + getJoins().get(i).getTableWhereToJoin() + " ";
-                joins = joins + "column of the table to join " + getJoins().get(i).getColumnOfTableToJoin() + " ";
-                joins = joins + "column of the table where to join " + getJoins().get(i).getColumnWhereToJoin() + " ";
+        if (getJoins() != null) {
+            for (int i = 0; i < getJoins().size(); i++) {
+                joins = joins + "joint type " + getJoins().get(i).getJoinType() + " ";
+                joins = joins + "what table to join " + getJoins().get(i).getWhatTableToJoin() + " ";
+                if (!getJoins().get(i).getJoinType().equals("CROSS")) {
+                    joins = joins + "table where to join " + getJoins().get(i).getTableWhereToJoin() + " ";
+                    joins = joins + "column of the table to join " + getJoins().get(i).getColumnOfTableToJoin() + " ";
+                    joins = joins + "column of the table where to join " + getJoins().get(i).getColumnWhereToJoin() + " ";
+                }
             }
         }
 
         String wheres = "where: ";
-        for (int i = 0; i < getWhereClauses().size(); i++) {
-            wheres = wheres + "object of where " + getWhereClauses().get(i).getObject() + " ";
-            wheres = wheres + "clause " + getWhereClauses().get(i).getClause().toString() + " ";
-            wheres = wheres + "values " + getWhereClauses().get(i).getValue().toString() + " ";
+        if (getWhereClauses() != null) {
+            for (int i = 0; i < getWhereClauses().size(); i++) {
+                wheres = wheres + "object of where " + getWhereClauses().get(i).getObject() + " ";
+                wheres = wheres + "clause " + getWhereClauses().get(i).getClause().toString() + " ";
+                wheres = wheres + "values " + getWhereClauses().get(i).getValue().toString() + " ";
+            }
         }
 
         String groups = "group by:";
-        for (int i = 0; i < getGroupByColumns().size(); i++) {
-            groups = groups + " " + getGroupByColumns().get(i);
+        if (getGroupByColumns() != null) {
+            for (int i = 0; i < getGroupByColumns().size(); i++) {
+                groups = groups + " " + getGroupByColumns().get(i);
+            }
         }
 
         String sortColumns = "order by:";
-        for (int i = 0; i < getSortColumns().size(); i++) {
-            sortColumns = sortColumns + "column " + getSortColumns().get(i).getColumn() + " ";
-            sortColumns = sortColumns + "order " + getSortColumns().get(i).getOrder() + " ";
+        if (getSortColumns() != null) {
+
+            for (int i = 0; i < getSortColumns().size(); i++) {
+                sortColumns = sortColumns + "column " + getSortColumns().get(i).getColumn() + " ";
+                sortColumns = sortColumns + "order " + getSortColumns().get(i).getOrder() + " ";
+            }
         }
         return columns + "\n" + sources + "\n" + joins + "\n" + wheres + "\n" + groups + "\n" + sortColumns
                 + "\noffset: " + getOffset() + "\nlimit: " + getLimit();
