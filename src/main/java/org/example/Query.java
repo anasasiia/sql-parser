@@ -121,11 +121,11 @@ public class Query {
         if (getJoins() != null) {
             for (int i = 0; i < getJoins().size(); i++) {
                 joins = joins + "joint type " + getJoins().get(i).getJoinType() + " ";
-                joins = joins + "what table to join " + getJoins().get(i).getWhatTableToJoin() + " ";
+                joins = joins + "what table to join " + getJoins().get(i).getTable1() + " ";
                 if (!getJoins().get(i).getJoinType().equals("CROSS")) {
-                    joins = joins + "table where to join " + getJoins().get(i).getTableWhereToJoin() + " ";
-                    joins = joins + "column of the table to join " + getJoins().get(i).getColumnOfTableToJoin() + " ";
-                    joins = joins + "column of the table where to join " + getJoins().get(i).getColumnWhereToJoin() + " ";
+                    joins = joins + "table where to join " + getJoins().get(i).getTable2() + " ";
+                    joins = joins + "column of the table to join " + getJoins().get(i).getColumnOfTable2() + " ";
+                    joins = joins + "column of the table where to join " + getJoins().get(i).getColumnOfTable1() + " ";
                 }
             }
         }

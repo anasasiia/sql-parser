@@ -10,33 +10,16 @@ public class ToJoin {
     public static void run(String[] arg) {
         Join join = new Join();
         join.setJoinType(arg[0]);
-        join.setWhatTableToJoin(arg[2]);
+        join.setTable2(arg[2]);
 
         if (!join.getJoinType().equals("CROSS")) {
-            String column1 = arg[4];
-            int index1 = 0;
-            for (int i = 0; i < column1.length(); i++) {
-                if (column1.charAt(i) == '.') {
-                    index1 = i;
-                    break;
-                }
-            }
-            String tableWhereToJoin = column1.substring(0, index1);
-            column1 = column1.substring(index1 + 1, column1.length());
+            int index1 = arg[4].lastIndexOf('.');
+            String table1 = arg[4].substring(0, index1);
+            join.setTable1(table1);
+            join.setColumnOfTable1(arg[4].substring(index1 + 1));
 
-            join.setTableWhereToJoin(tableWhereToJoin);
-            join.setColumnWhereToJoin(column1);
-
-            String column2 = arg[6];
-            int index2 = 0;
-            for (int i = 0; i < column2.length(); i++) {
-                if (column2.charAt(i) == '.') {
-                    index2 = i;
-                    break;
-                }
-            }
-            column2 = column2.substring(index2 + 1, column2.length());
-            join.setColumnOfTableToJoin(column2);
+            int index2 = arg[6].lastIndexOf('.');
+            join.setColumnOfTable2(arg[6].substring(index2 + 1));
         }
         joins.add(join);
     }

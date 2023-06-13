@@ -2,48 +2,48 @@ package org.example.elements;
 
 public class Join {
     private String joinType;
-    private String whatTableToJoin;
-    private String tableWhereToJoin;
-    private String columnWhereToJoin;
-    private String columnOfTableToJoin;
+    private String table1;
+    private String table2;
+    private String columnOfTable1;
+    private String columnOfTable2;
 
-    public String getColumnOfTableToJoin() {
-        return columnOfTableToJoin;
+    public String getColumnOfTable2() {
+        return columnOfTable2;
     }
 
-    public String getColumnWhereToJoin() {
-        return columnWhereToJoin;
+    public String getColumnOfTable1() {
+        return columnOfTable1;
     }
 
     public String getJoinType() {
         return joinType;
     }
 
-    public String getTableWhereToJoin() {
-        return tableWhereToJoin;
+    public String getTable2() {
+        return table2;
     }
 
-    public String getWhatTableToJoin() {
-        return whatTableToJoin;
+    public String getTable1() {
+        return table1;
     }
 
-    public void setColumnOfTableToJoin(String columnOfTableToJoin) {
-        this.columnOfTableToJoin = columnOfTableToJoin;
+    public void setColumnOfTable2(String columnOfTable2) {
+        this.columnOfTable2 = columnOfTable2;
     }
 
-    public void setColumnWhereToJoin(String columnWhereToJoin) {
-        this.columnWhereToJoin = columnWhereToJoin;
+    public void setColumnOfTable1(String columnOfTable1) {
+        this.columnOfTable1 = columnOfTable1;
     }
 
     public void setJoinType(String joinType) {
         this.joinType = joinType;
     }
 
-    public void setTableWhereToJoin(String tableWhereToJoin) {
-        this.tableWhereToJoin = tableWhereToJoin;
+    public void setTable2(String table2) {
+        this.table2 = table2;
     }
 
-    public void setWhatTableToJoin(String whatTableToJoin) {
-        this.whatTableToJoin = whatTableToJoin;
+    public void setTable1(String table1) {
+        this.table1 = table1;
     }
 }
