@@ -1,8 +1,0 @@
-columns: one column {name=author} one column {age=author} 
-from sources: nested query one column {name=author} alias name a_alias 
-how to join: joint type INNER what table to join libraries table where to join author column of the table to join author_id column of the table where to join id 
-where: object of where a clause [BETWEEN, AND] values [2000, 9000] object of where b clause [>] values [3] object of where c clause [NOT LIKE] values [CCC] 
-group by: a b c
-order by:column a order ASC column b order DESC 
-offset: 10
-limit: 5

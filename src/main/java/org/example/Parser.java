@@ -7,7 +7,9 @@ import org.example.elements.Source;
 import org.example.elements.WhereClause;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Parser {
    public static Query query = new Query();
@@ -60,9 +62,13 @@ public class Parser {
         int oldSymbolLength = oldSymbol.length();
         StringBuilder stringBuilder = new StringBuilder(line);
 
-        for (int i = 0; i < line.length(); i++) {
-            if (oldSymbol.equals(String.valueOf(line.charAt(i)))) {
-                stringBuilder.replace(i, i + oldSymbolLength, newSymbol);
+        int[] indexes = IntStream.range(0, line.length())
+                .filter(i -> String.valueOf(line.charAt(i)).equals(oldSymbol))
+                .toArray();
+
+        if (Arrays.stream(indexes).count() != 0) {
+            for (int i = indexes.length - 1; i >= 0; i--) {
+                stringBuilder.replace(indexes[i], indexes[i] + oldSymbolLength, newSymbol);
             }
         }
         return stringBuilder.toString();
