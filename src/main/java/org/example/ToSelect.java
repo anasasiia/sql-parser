@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.elements.Column;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,58 +11,78 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class ToSelect {
-    public static List<Column> run(String[] arg) {
+    public static List<Column> run(String[] arg) throws FileNotFoundException {
         List<Column> columns = new ArrayList<>();
 
-        int index = 0;
-        int[] indexOfComma = new int[arg.length / 2 + 1];
+        List<Integer> indexOfComma = new ArrayList<>();
         for (int i = 0; i < arg.length; i++) {
             if (arg[i].equals(",")) {
-                indexOfComma[index] = i;
-                index++;
+                indexOfComma.add(i);
             }
         }
-        indexOfComma[index] = arg.length - 1;
-        indexOfComma = Arrays.stream(indexOfComma)
-                .filter(i -> i != 0)
-                .toArray();
+        indexOfComma.add(arg.length);
 
         int start = 0;
-        int stop;
 
-        for (int j : indexOfComma) {
-            stop = j;
+        for (Integer stop : indexOfComma) {
             Column column = new Column();
-            String name;
+            String alias = null;
             Map<String, String> tableAndColumnName = new HashMap<>();
 
-            if (arg[start + 1].equals("*")) {
-                name = "all columns";
-                tableAndColumnName.put(arg[start + 1], "empty");
-            } else if (stop - (start + 1) > 1) {
-                name = arg[start + 1];
-                tableAndColumnName.put(arg[start + 1], "empty");
-            } else {
-                name = "one column";
+            int indexOfOpenBracket = IntStream.range(start, stop)
+                    .filter(i -> arg[i].equals("("))
+                    .findFirst()
+                    .orElse(-1);
+
+            if (stop - (start + 1) == 3) {
+                alias = arg[start + 3];
+                tableAndColumnName.put(arg[start + 1], "");
+            }
+
+            if (stop - start == 2 || indexOfOpenBracket - start > 1){
                 String str = arg[start + 1];
-                int commaIndex = IntStream.range(0, str.length())
+                int delimiterIndex = IntStream.range(0, str.length())
                         .filter(i -> str.charAt(i) == '.' || str.charAt(i) == '_')
                         .findFirst()
                         .orElse(-1);
 
-                if (commaIndex == -1) {
-                    tableAndColumnName.put(arg[start + 1], "empty");
+                if (delimiterIndex == -1) {
+                    tableAndColumnName.put(arg[start + 1], "");
                 } else {
-                    tableAndColumnName.put(str.substring(commaIndex + 1),
-                            str.substring(0, commaIndex));
+                    tableAndColumnName.put(str.substring(delimiterIndex + 1),
+                            str.substring(0, delimiterIndex));
                 }
             }
-            column.setName(name);
+            column.setAlias(alias);
             column.setTableAndColumnName(tableAndColumnName);
             columns.add(column);
 
+            if (stop - (start + 1) > 3 || arg[start + 1].equals("(")) {
+                Column column1 = prepareColumnWithNestedQuery(arg, indexOfOpenBracket, arg.length);
+                columns.add(column1);
+                break;
+            }
             start = stop;
         }
         return columns;
+    }
+
+    private static Column prepareColumnWithNestedQuery(String[] arg, int indexOfOpenBracket, int lengthOfArg) {
+        Column column = new Column();
+
+        int indexOfCloseBracket = IntStream.range(indexOfOpenBracket, lengthOfArg)
+                .filter(i -> arg[i].equals(")"))
+                .findFirst()
+                .orElse(-1);
+
+        String[] nestedQuery = Arrays.copyOfRange(arg, indexOfOpenBracket + 1, indexOfCloseBracket);
+        int indexOfNestedQuery = Reader.processNestedStatement(nestedQuery);
+
+        column.setIndexOfNestedQuery(indexOfNestedQuery);
+
+        if (lengthOfArg - indexOfCloseBracket > 0) {
+            column.setAlias(arg[indexOfCloseBracket + 1]);
+        }
+        return column;
     }
 }
