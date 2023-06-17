@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToJoin {
-    private static final List<Join> joins = new ArrayList<>();
+    private static final List<Join> JOINS = new ArrayList<>();
     public static void run(String[] arg) {
         Join join = new Join();
         join.setJoinType(arg[0]);
@@ -21,10 +21,10 @@ public class ToJoin {
             int index2 = arg[7].lastIndexOf('.');
             join.setColumnOfTable2(arg[7].substring(index2 + 1));
         }
-        joins.add(join);
+        JOINS.add(join);
     }
 
     public static List<Join> getJoins() {
-        return joins;
+        return JOINS;
     }
 }

@@ -1,7 +1,5 @@
 package org.example.elements;
 
-import org.example.Query;
-
 public class Source {
     private String tableName;
     private String alias;

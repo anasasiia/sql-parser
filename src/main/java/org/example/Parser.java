@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Parser {
-   private static final Query query = new Query();
+   private static final Query QUERY = new Query();
 
-   private static final List<Query> nestedQueries = new ArrayList<>();
+   private static final List<Query> NESTED_QUERIES = new ArrayList<>();
    private static int countOfNestedQueries = 0;
 
    public static void parse(String line, Query queryToParse) throws FileNotFoundException {
@@ -49,6 +49,7 @@ public class Parser {
            }
            case "OFFSET" -> queryToParse.setOffset(Integer.parseInt(arg[1]));
            case "LIMIT" -> queryToParse.setLimit(Integer.parseInt(arg[1]));
+           default -> System.exit(0);
        }
    }
 
@@ -67,15 +68,15 @@ public class Parser {
                 throw new RuntimeException(e);
             }
         });
-        nestedQueries.add(nestedQuery);
+        NESTED_QUERIES.add(nestedQuery);
         int index = getCountOfNestedQueries();
         setCountOfNestedQueries(getCountOfNestedQueries() + 1);
         return index;
     }
 
     private static String prepareStatement(String line) {
-        line = replaceSymbols(line,",", " ,");
-        line = replaceSymbols(line,"(", "( ");
+        line = replaceSymbols(line, ",", " ,");
+        line = replaceSymbols(line, "(", "( ");
         line = replaceSymbols(line, ")", " )");
         line = replaceSymbols(line, "'", "");
         return line;
@@ -98,7 +99,7 @@ public class Parser {
     }
 
     public static Query getQuery() {
-        return query;
+        return QUERY;
     }
 
     public static int getCountOfNestedQueries() {
@@ -106,13 +107,13 @@ public class Parser {
     }
 
     public static List<Query> getNestedQueries() {
-        return nestedQueries;
+        return NESTED_QUERIES;
     }
 
     public static void setCountOfNestedQueries(int countOfNestedQueries) {
         Parser.countOfNestedQueries = countOfNestedQueries;
     }
     public static String queryToString() {
-         return query.toString();
+         return QUERY.toString();
     }
 }

@@ -39,7 +39,7 @@ public class ToSelect {
                 tableAndColumnName.put(arg[start + 1], "");
             }
 
-            if (stop - start == 2 || indexOfOpenBracket - start > 1){
+            if (stop - start == 2 || indexOfOpenBracket - start > 1) {
                 String str = arg[start + 1];
                 int delimiterIndex = IntStream.range(0, str.length())
                         .filter(i -> str.charAt(i) == '.' || str.charAt(i) == '_')
