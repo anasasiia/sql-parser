@@ -6,54 +6,77 @@ import org.example.elements.Sort;
 import org.example.elements.Source;
 import org.example.elements.WhereClause;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class Parser {
-   public static Query query = new Query();
+   private static final Query query = new Query();
 
-    public static void parse(String line) throws IOException {
-        line = prepareLine(line);
+   private static final List<Query> nestedQueries = new ArrayList<>();
+   private static int countOfNestedQueries = 0;
 
-        String[] arg = line.split(" ");
+   public static void parse(String line, Query queryToParse) throws FileNotFoundException {
+       String[] arg = line.split(" ");
 
-        switch (arg[0]) {
-            case "SELECT" -> {
-                List<Column> selections = ToSelect.run(arg);
-                query.setSelections(selections);
-            }
-            case "FROM" -> {
-                List<Source> sources = ToGetFrom.run(arg);
-                query.setFromSources(sources);
-            }
-            case "INNER", "LEFT", "RIGHT", "FULL", "CROSS" -> {
-                ToJoin.run(arg);
-                List<Join> joins = ToJoin.getJoins();
-                query.setJoins(joins);
-            }
-            case "WHERE" -> {
-                List<WhereClause> clauses = ToGetWhere.run(arg);
-                query.setWhereClauses(clauses);
-            }
-            case "GROUP" -> {
-                List<String> columns = ToGroup.run(arg);
-                query.setGroupByColumns(columns);
-            }
-            case "ORDER" -> {
-                List<Sort> sortColumns = ToOrder.run(arg);
-                query.setSortColumns(sortColumns);
-            }
-            case "OFFSET" -> query.setOffset(Integer.parseInt(arg[1]));
-            case "LIMIT" -> query.setLimit(Integer.parseInt(arg[1]));
-        }
+       switch (arg[0]) {
+           case "SELECT" -> {
+               List<Column> selections = ToSelect.run(arg);
+               queryToParse.setSelections(selections);
+           }
+           case "FROM" -> {
+               List<Source> sources = ToGetFrom.run(arg);
+               queryToParse.setFromSources(sources);
+           }
+           case "INNER", "LEFT", "RIGHT", "FULL", "CROSS" -> {
+               ToJoin.run(arg);
+               List<Join> joins = ToJoin.getJoins();
+               queryToParse.setJoins(joins);
+           }
+           case "WHERE" -> {
+               List<WhereClause> clauses = ToGetWhere.run(arg);
+               queryToParse.setWhereClauses(clauses);
+           }
+           case "GROUP" -> {
+               List<String> columns = ToGroup.run(arg);
+               queryToParse.setGroupByColumns(columns);
+           }
+           case "ORDER" -> {
+               List<Sort> sortColumns = ToOrder.run(arg);
+               queryToParse.setSortColumns(sortColumns);
+           }
+           case "OFFSET" -> queryToParse.setOffset(Integer.parseInt(arg[1]));
+           case "LIMIT" -> queryToParse.setLimit(Integer.parseInt(arg[1]));
+       }
+   }
+
+    public static void parseQuery(String line) throws Exception {
+        line = prepareStatement(line);
+        parse(line, getQuery());
     }
 
-    private static String prepareLine(String line) {
+    public static int parseNestedQuery(List<String> request) {
+        Query nestedQuery = new Query();
+
+        request.forEach(line -> {
+            try {
+                parse(line, nestedQuery);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        nestedQueries.add(nestedQuery);
+        int index = getCountOfNestedQueries();
+        setCountOfNestedQueries(getCountOfNestedQueries() + 1);
+        return index;
+    }
+
+    private static String prepareStatement(String line) {
         line = replaceSymbols(line,",", " ,");
-        line = replaceSymbols(line,"(", "");
-        line = replaceSymbols(line, ")", "");
+        line = replaceSymbols(line,"(", "( ");
+        line = replaceSymbols(line, ")", " )");
         line = replaceSymbols(line, "'", "");
         return line;
     }
@@ -78,6 +101,17 @@ public class Parser {
         return query;
     }
 
+    public static int getCountOfNestedQueries() {
+        return countOfNestedQueries;
+    }
+
+    public static List<Query> getNestedQueries() {
+        return nestedQueries;
+    }
+
+    public static void setCountOfNestedQueries(int countOfNestedQueries) {
+        Parser.countOfNestedQueries = countOfNestedQueries;
+    }
     public static String queryToString() {
          return query.toString();
     }

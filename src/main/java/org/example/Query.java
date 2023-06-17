@@ -2,7 +2,11 @@ package org.example;
 
 import java.util.List;
 
-import org.example.elements.*;
+import org.example.elements.Column;
+import org.example.elements.Join;
+import org.example.elements.Sort;
+import org.example.elements.Source;
+import org.example.elements.WhereClause;
 
 
 public class Query {
@@ -12,8 +16,8 @@ public class Query {
     private List<WhereClause> whereClauses;
     private List<String> groupByColumns;
     private List<Sort> sortColumns;
-    private Integer limit;
-    private Integer offset;
+    private Integer limit = 0;
+    private Integer offset = 0;
 
     public Query() {
     }
@@ -84,77 +88,92 @@ public class Query {
 
 
     public String toString() {
-        String columns = "columns: ";
+        StringBuilder stringBuilder = new StringBuilder();
         if (getSelections() != null) {
+            stringBuilder.append("SELECT ");
             for (int i = 0; i < getSelections().size(); i++) {
-                if (getSelections().get(i).getName() != null) {
-                    columns += getSelections().get(i).getName() + " ";
-                }
                 if (getSelections().get(i).getTableAndColumnName() != null) {
-                    if (getSelections().get(i).getTableAndColumnName().containsValue("empty")) {
-                        columns += getSelections().get(i).getTableAndColumnName().keySet() + " ";
-                    } else {
-                        columns += getSelections().get(i).getTableAndColumnName().toString() + " ";
+                    String columnName = getSelections().get(i).getTableAndColumnName().keySet()
+                            .stream().findFirst().get();
+                    stringBuilder.append(columnName).append(" ");
+
+                    if (!getSelections().get(i).getTableAndColumnName().get(columnName).equals("")) {
+                        stringBuilder.append(".").append(getSelections().get(i).getTableAndColumnName()
+                                                                                        .get(columnName)).append(" ");
                     }
                 }
+                if (getSelections().get(i).getIndexOfNestedQuery() != -1) {
+                    stringBuilder.append("( ").append(Parser.getNestedQueries().get(getSelections().get(i)
+                                    .getIndexOfNestedQuery()).toString()).append(") ");
+                }
+                if (getSelections().get(i).getAlias() != null) {
+                    stringBuilder.append("AS ").append(getSelections().get(i).getAlias()).append(" ");
+                }
             }
         }
 
-        String sources = "from sources: ";
         if (getFromSources() != null) {
+            stringBuilder.append("\nFROM ");
             for (int i = 0; i < getFromSources().size(); i++) {
                 if (getFromSources().get(i).getTableName() != null) {
-                    sources = sources + "name of the table source " + getFromSources().get(i).getTableName() + " ";
+                    stringBuilder.append(getFromSources().get(i).getTableName()).append(" ");
                 }
-                if (getFromSources().get(i).getNestedQuery() != null) {
-                    sources = sources + "nested query " +
-                            getFromSources().get(i).getNestedQuery().getSelections().get(0).getName() + " "
-                            + getFromSources().get(i).getNestedQuery().getSelections().get(0).getTableAndColumnName() + " ";
+                if (getFromSources().get(i).getIndexOfNestedQuery() != -1) {
+                    stringBuilder.append("(").append(Parser.getNestedQueries().get(getFromSources().get(i)
+                            .getIndexOfNestedQuery()).toString()).append(") ");
                 }
                 if (getFromSources().get(i).getAlias() != null) {
-                    sources = sources + "alias name " + getFromSources().get(i).getAlias() + " ";
+                    stringBuilder.append(getFromSources().get(i).getAlias()).append(" ");
                 }
             }
         }
 
-        String joins = "how to join: ";
         if (getJoins() != null) {
             for (int i = 0; i < getJoins().size(); i++) {
-                joins = joins + "joint type " + getJoins().get(i).getJoinType() + " ";
-                joins = joins + "what table to join " + getJoins().get(i).getTable1() + " ";
+                stringBuilder.append("\n").append(getJoins().get(i).getJoinType()).append(" ").append("JOIN ");
+                stringBuilder.append(getJoins().get(i).getTable2()).append(" ");
                 if (!getJoins().get(i).getJoinType().equals("CROSS")) {
-                    joins = joins + "table where to join " + getJoins().get(i).getTable2() + " ";
-                    joins = joins + "column of the table to join " + getJoins().get(i).getColumnOfTable2() + " ";
-                    joins = joins + "column of the table where to join " + getJoins().get(i).getColumnOfTable1() + " ";
+                    stringBuilder.append("ON ")
+                            .append(getJoins().get(i).getTable1()).append(".")
+                            .append(getJoins().get(i).getColumnOfTable2()).append(" = ")
+                            .append(getJoins().get(i).getTable2()).append(".")
+                            .append(getJoins().get(i).getColumnOfTable1()).append(" ");
                 }
             }
         }
 
-        String wheres = "where: ";
         if (getWhereClauses() != null) {
-            for (int i = 0; i < getWhereClauses().size(); i++) {
-                wheres = wheres + "object of where " + getWhereClauses().get(i).getObject() + " ";
-                wheres = wheres + "clause " + getWhereClauses().get(i).getClause().toString() + " ";
-                wheres = wheres + "values " + getWhereClauses().get(i).getValue().toString() + " ";
+            stringBuilder.append("\nWHERE ");
+            stringBuilder.append(getWhereClauses().get(0).getObject()).append(" ");
+            stringBuilder.append(String.join(" ", getWhereClauses().get(0).getClause())).append(" ");
+            stringBuilder.append(String.join(" ", getWhereClauses().get(0).getValue())).append(" ");
+            for (int i = 1; i < getWhereClauses().size(); i++) {
+                stringBuilder.append("AND ").append(getWhereClauses().get(i).getObject()).append(" ");
+                stringBuilder.append(String.join(" ", getWhereClauses().get(i).getClause())).append(" ");
+                stringBuilder.append(String.join(" ", getWhereClauses().get(i).getValue())).append(" ");
             }
         }
 
-        String groups = "group by:";
         if (getGroupByColumns() != null) {
-            for (int i = 0; i < getGroupByColumns().size(); i++) {
-                groups = groups + " " + getGroupByColumns().get(i);
-            }
+            stringBuilder.append("\nGROUP BY ");
+            stringBuilder.append(String.join(" ", getGroupByColumns())).append(" ");
         }
 
-        String sortColumns = "order by:";
         if (getSortColumns() != null) {
-
+            stringBuilder.append("\nORDER BY ");
             for (int i = 0; i < getSortColumns().size(); i++) {
-                sortColumns = sortColumns + "column " + getSortColumns().get(i).getColumn() + " ";
-                sortColumns = sortColumns + "order " + getSortColumns().get(i).getOrder() + " ";
+                stringBuilder.append(getSortColumns().get(i).getColumn()).append(" ");
+                if (getSortColumns().get(i).getOrder() != null) {
+                    stringBuilder.append(getSortColumns().get(i).getOrder()).append(" ");
+                }
             }
         }
-        return columns + "\n" + sources + "\n" + joins + "\n" + wheres + "\n" + groups + "\n" + sortColumns
-                + "\noffset: " + getOffset() + "\nlimit: " + getLimit();
+        if (getLimit() != 0) {
+            stringBuilder.append("\nLIMIT ").append(getLimit());
+        }
+        if (getOffset() != 0) {
+            stringBuilder.append("\nOFFSET").append(getOffset());
+        }
+        return stringBuilder.toString();
     }
 }
