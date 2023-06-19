@@ -12,7 +12,6 @@ public class ToSelect {
         List<Column> columns = new ArrayList<>();
 
         List<Integer> indexOfComma = Utils.findIndexesOfComma(arg);
-        indexOfComma.add(arg.length);
 
         int start = 0;
 

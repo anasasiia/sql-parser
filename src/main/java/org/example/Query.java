@@ -90,19 +90,19 @@ public class Query {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         if (getSelections() != null) {
-            stringBuilder.append(stringBuilderSelections());
+            stringBuilder.append(QueryBuilder.stringBuilderSelections(getSelections()));
         }
 
         if (getFromSources() != null) {
-            stringBuilder.append(stringBuilderFromSources());
+            stringBuilder.append(QueryBuilder.stringBuilderFromSources(getFromSources()));
         }
 
         if (getJoins() != null) {
-            stringBuilder.append(stringBuilderJoins());
+            stringBuilder.append(QueryBuilder.stringBuilderJoins(getJoins()));
         }
 
         if (getWhereClauses() != null) {
-            stringBuilder.append(stringBuilderWhereClauses());
+            stringBuilder.append(QueryBuilder.stringBuilderWhereClauses(getWhereClauses()));
         }
 
         if (getGroupByColumns() != null) {
@@ -111,98 +111,14 @@ public class Query {
         }
 
         if (getSortColumns() != null) {
-            stringBuilder.append(stringBuilderOrderBy());
+            stringBuilder.append(QueryBuilder.stringBuilderOrderBy(getSortColumns()));
         }
         if (getLimit() != 0) {
             stringBuilder.append("\nLIMIT ").append(getLimit());
         }
         if (getOffset() != 0) {
-            stringBuilder.append("\nOFFSET").append(getOffset());
+            stringBuilder.append("\nOFFSET ").append(getOffset());
         }
         return stringBuilder.toString();
-    }
-
-    private StringBuilder stringBuilderSelections() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        for (int i = 0; i < getSelections().size(); i++) {
-            if (getSelections().get(i).getTableAndColumnName() != null) {
-                String columnName = getSelections().get(i).getTableAndColumnName().keySet()
-                        .stream().findFirst().get();
-                if (!getSelections().get(i).getTableAndColumnName().get(columnName).equals("")) {
-                    sb.append(getSelections().get(i).getTableAndColumnName()
-                            .get(columnName)).append(".");
-                }
-                sb.append(columnName).append(" ");
-            }
-            if (getSelections().get(i).getIndexOfNestedQuery() != -1) {
-                sb.append("( ").append(Parser.getNestedQueries().get(getSelections().get(i)
-                        .getIndexOfNestedQuery()).toString()).append(") ");
-            }
-            if (getSelections().get(i).getAlias() != null) {
-                sb.append("AS ").append(getSelections().get(i).getAlias()).append(" ");
-            }
-        }
-        return sb;
-    }
-
-    private StringBuilder stringBuilderFromSources() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nFROM ");
-        for (int i = 0; i < getFromSources().size(); i++) {
-            if (getFromSources().get(i).getTableName() != null) {
-                sb.append(getFromSources().get(i).getTableName()).append(" ");
-            }
-            if (getFromSources().get(i).getIndexOfNestedQuery() != -1) {
-                sb.append("(").append(Parser.getNestedQueries().get(getFromSources().get(i)
-                        .getIndexOfNestedQuery()).toString()).append(") ");
-            }
-            if (getFromSources().get(i).getAlias() != null) {
-                sb.append(getFromSources().get(i).getAlias()).append(" ");
-            }
-        }
-        return sb;
-    }
-
-    private StringBuilder stringBuilderJoins() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < getJoins().size(); i++) {
-            sb.append("\n").append(getJoins().get(i).getJoinType()).append(" ").append("JOIN ");
-            sb.append(getJoins().get(i).getTable2()).append(" ");
-            if (!getJoins().get(i).getJoinType().equals("CROSS")) {
-                sb.append("ON ")
-                        .append(getJoins().get(i).getTable1()).append(".")
-                        .append(getJoins().get(i).getColumnOfTable2()).append(" = ")
-                        .append(getJoins().get(i).getTable2()).append(".")
-                        .append(getJoins().get(i).getColumnOfTable1()).append(" ");
-            }
-        }
-        return sb;
-    }
-
-    private StringBuilder stringBuilderWhereClauses() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nWHERE ");
-        sb.append(getWhereClauses().get(0).getObject()).append(" ");
-        sb.append(String.join(" ", getWhereClauses().get(0).getClause())).append(" ");
-        sb.append(String.join(" ", getWhereClauses().get(0).getValue())).append(" ");
-        for (int i = 1; i < getWhereClauses().size(); i++) {
-            sb.append("AND ").append(getWhereClauses().get(i).getObject()).append(" ");
-            sb.append(String.join(" ", getWhereClauses().get(i).getClause())).append(" ");
-            sb.append(String.join(" ", getWhereClauses().get(i).getValue())).append(" ");
-        }
-        return sb;
-    }
-
-    private StringBuilder stringBuilderOrderBy() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nORDER BY ");
-        for (int i = 0; i < getSortColumns().size(); i++) {
-            sb.append(getSortColumns().get(i).getColumn()).append(" ");
-            if (getSortColumns().get(i).getOrder() != null) {
-                sb.append(getSortColumns().get(i).getOrder()).append(" ");
-            }
-        }
-        return sb;
     }
 }
