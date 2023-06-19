@@ -1,4 +1,4 @@
-package org.example.elements;
+package org.example;
 
 public class ColumnSource {
     private String alias;

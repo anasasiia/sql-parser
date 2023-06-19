@@ -1,5 +1,7 @@
 package org.example.elements;
 
+import org.example.ColumnSource;
+
 import java.util.Map;
 
 public class Column extends ColumnSource {
