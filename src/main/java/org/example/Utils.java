@@ -7,9 +7,7 @@ import java.util.stream.IntStream;
 
 public class Utils {
 
-    public static int returnIndexOfNestedQuery(String[] arg, int indexOfOpenBracket) {
-        int indexOfCloseBracket = findIndexOfSymbol(arg, indexOfOpenBracket, arg.length, ")");
-
+    public static int returnIndexOfNestedQuery(String[] arg, int indexOfOpenBracket, int indexOfCloseBracket) {
         String[] nestedQuery = Arrays.copyOfRange(arg, indexOfOpenBracket + 1, indexOfCloseBracket);
         return Reader.processNestedStatement(nestedQuery);
     }

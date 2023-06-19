@@ -22,9 +22,10 @@ public class ToSelect {
 
             if (stop - (start + 1) > 3 || arg[start + 1].equals("(")) {
                 Column column2 = new Column();
-                column2.setIndexOfNestedQuery(Utils.returnIndexOfNestedQuery(arg, indexOfOpenBracket));
                 int indexOfCloseBracket = Utils.findIndexOfSymbol(arg, indexOfOpenBracket, arg.length, ")");
-                column2.setAlias(Utils.returnAlias(arg, indexOfCloseBracket, arg.length));
+                column2.setIndexOfNestedQuery(Utils.returnIndexOfNestedQuery(arg, indexOfOpenBracket,
+                        indexOfCloseBracket));
+                column2.setAlias(Utils.returnAlias(arg, arg.length, indexOfCloseBracket));
                 columns.add(column2);
                 break;
             }
