@@ -25,7 +25,7 @@ public class ToGetFrom {
                 int indexOfCloseBracket = Utils.findIndexOfSymbol(arg, start, stop, ")");
                 source.setIndexOfNestedQuery(Utils.returnIndexOfNestedQuery(arg, indexOfOpenBracket,
                                                                                 indexOfCloseBracket));
-                source.setAlias(Utils.returnAlias(arg,arg.length, indexOfCloseBracket));
+                source.setAlias(Utils.returnAlias(arg, arg.length, indexOfCloseBracket));
                 fromSources.add(source);
                 break;
             }
