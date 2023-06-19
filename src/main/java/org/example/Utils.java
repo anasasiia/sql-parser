@@ -1,30 +1,24 @@
 package org.example;
 
-import org.example.elements.ColumnSource;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class Utils {
-    public static ColumnSource prepareColumnSourceWithNestedQuery(String[] arg, int indexOfOpenBracket, int lengthOfArg) {
-        ColumnSource columnSource = new ColumnSource();
 
-        int indexOfCloseBracket = IntStream.range(indexOfOpenBracket, lengthOfArg)
-                .filter(i -> arg[i].equals(")"))
-                .findFirst()
-                .orElse(-1);
+    public static int returnIndexOfNestedQuery(String[] arg, int indexOfOpenBracket) {
+        int indexOfCloseBracket = findIndexOfSymbol(arg, indexOfOpenBracket, arg.length, ")");
 
         String[] nestedQuery = Arrays.copyOfRange(arg, indexOfOpenBracket + 1, indexOfCloseBracket);
-        int indexOfNestedQuery = Reader.processNestedStatement(nestedQuery);
+        return Reader.processNestedStatement(nestedQuery);
+    }
 
-        columnSource.setIndexOfNestedQuery(indexOfNestedQuery);
-
-        if (lengthOfArg - indexOfCloseBracket > 0) {
-            columnSource.setAlias(arg[indexOfCloseBracket + 1]);
+    public static String returnAlias(String[] arg, int to, int from) {
+        if (to - from == 2) {
+            return arg[from + 1];
         }
-        return columnSource;
+        return null;
     }
 
     public static List<Integer> findIndexesOfComma(String[] arg) {
