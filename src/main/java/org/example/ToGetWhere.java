@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToGetWhere {
+    private static final List<String> nonValues = List.of("IN", "LIKE", "IS", "AND", ",");
+
     public static List<WhereClause> run(String[] arg) {
         List<WhereClause> whereClauses = new ArrayList<>();
 
@@ -38,8 +40,7 @@ public class ToGetWhere {
 
             List<String> values = new ArrayList<>();
             for (int j = start + 3; j < stop; j++) {
-                if (!arg[j].equals("IN") && !arg[j].equals("LIKE") && !arg[j].equals("IS")
-                        && !arg[j].equals("AND") && !arg[j].equals(",")) {
+                if (!getNonValues().contains(arg[j])) {
                     values.add(arg[j]);
                 }
             }
@@ -49,5 +50,9 @@ public class ToGetWhere {
             start = stop;
         }
         return whereClauses;
+    }
+
+    public static List<String> getNonValues() {
+        return nonValues;
     }
 }
