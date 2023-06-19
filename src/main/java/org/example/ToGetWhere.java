@@ -24,19 +24,7 @@ public class ToGetWhere {
         for (Integer stop : indexOfAnd) {
             WhereClause whereClause = new WhereClause();
             whereClause.setObject(arg[start + 1]);
-
-            List<String> clauses = new ArrayList<>();
-
-            if (arg[start + 2].equals("NOT")) {
-                String clause = arg[start + 2] + " " + arg[start + 3];
-                clauses.add(clause);
-            } else if (arg[start + 2].equals("BETWEEN")) {
-                clauses.add(arg[start + 2]);
-                clauses.add(arg[start + 4]);
-            } else {
-                clauses.add(arg[start + 2]);
-            }
-            whereClause.setClause(clauses);
+            setClauses(whereClause, arg, start);
 
             List<String> values = new ArrayList<>();
             for (int j = start + 3; j < stop; j++) {
@@ -50,6 +38,21 @@ public class ToGetWhere {
             start = stop;
         }
         return whereClauses;
+    }
+
+    private static void setClauses(WhereClause whereClause, String[] arg, int start) {
+        List<String> clauses = new ArrayList<>();
+
+        if (arg[start + 2].equals("NOT")) {
+            String clause = arg[start + 2] + " " + arg[start + 3];
+            clauses.add(clause);
+        } else if (arg[start + 2].equals("BETWEEN")) {
+            clauses.add(arg[start + 2]);
+            clauses.add(arg[start + 4]);
+        } else {
+            clauses.add(arg[start + 2]);
+        }
+        whereClause.setClause(clauses);
     }
 
     public static List<String> getNonValues() {

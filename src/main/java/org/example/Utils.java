@@ -34,6 +34,7 @@ public class Utils {
                 indexOfComma.add(i);
             }
         }
+        indexOfComma.add(arg.length);
         return indexOfComma;
     }
 
