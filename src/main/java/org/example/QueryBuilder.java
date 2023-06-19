@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.elements.Column;
-import org.example.elements.ColumnSource;
 import org.example.elements.Join;
 import org.example.elements.Sort;
 import org.example.elements.Source;
