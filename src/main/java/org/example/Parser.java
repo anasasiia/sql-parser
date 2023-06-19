@@ -6,7 +6,6 @@ import org.example.elements.Sort;
 import org.example.elements.Source;
 import org.example.elements.WhereClause;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +17,7 @@ public class Parser {
    private static final List<Query> NESTED_QUERIES = new ArrayList<>();
    private static int countOfNestedQueries = 0;
 
-   public static void parse(String line, Query queryToParse) throws FileNotFoundException {
+   public static void parse(String line, Query queryToParse) {
        String[] arg = line.split(" ");
 
        switch (arg[0]) {
@@ -49,11 +48,11 @@ public class Parser {
            }
            case "OFFSET" -> queryToParse.setOffset(Integer.parseInt(arg[1]));
            case "LIMIT" -> queryToParse.setLimit(Integer.parseInt(arg[1]));
-           default -> System.exit(0);
+           default -> System.out.println("unsupported statement");
        }
    }
 
-    public static void parseQuery(String line) throws Exception {
+    public static void parseQuery(String line) {
         line = prepareStatement(line);
         parse(line, getQuery());
     }

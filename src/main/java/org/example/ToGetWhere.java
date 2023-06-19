@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToGetWhere {
-    private static final List<String> nonValues = List.of("IN", "LIKE", "IS", "AND", ",");
+    private static final List<String> NON_VALUES = List.of("IN", "LIKE", "IS", "AND", ",");
 
     public static List<WhereClause> run(String[] arg) {
         List<WhereClause> whereClauses = new ArrayList<>();
@@ -56,6 +56,6 @@ public class ToGetWhere {
     }
 
     public static List<String> getNonValues() {
-        return nonValues;
+        return NON_VALUES;
     }
 }

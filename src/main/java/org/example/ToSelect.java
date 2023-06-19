@@ -17,11 +17,14 @@ public class ToSelect {
 
         for (Integer stop : indexOfComma) {
             int indexOfOpenBracket = Utils.findIndexOfSymbol(arg, start, stop, "(");
-            Column column1 = setColumn(arg, start, stop, indexOfOpenBracket);
+            Column column1 = setColumn(arg, start, stop);
             columns.add(column1);
 
             if (stop - (start + 1) > 3 || arg[start + 1].equals("(")) {
-                Column column2 = (Column) Utils.prepareColumnSourceWithNestedQuery(arg, indexOfOpenBracket, arg.length);
+                Column column2 = new Column();
+                column2.setIndexOfNestedQuery(Utils.returnIndexOfNestedQuery(arg, indexOfOpenBracket));
+                int indexOfCloseBracket = Utils.findIndexOfSymbol(arg, indexOfOpenBracket, arg.length, ")");
+                column2.setAlias(Utils.returnAlias(arg, indexOfCloseBracket, arg.length));
                 columns.add(column2);
                 break;
             }
@@ -30,25 +33,22 @@ public class ToSelect {
         return columns;
     }
 
-    private static Column setColumn(String[] arg, int start, int stop, int indexOfOpenBracket) {
+    private static Column setColumn(String[] arg, int start, int stop) {
         Column column = new Column();
         String alias = null;
         Map<String, String> tableAndColumnName = new HashMap<>();
 
         if (stop - (start + 1) == 3) {
             alias = arg[start + 3];
-            tableAndColumnName.put(arg[start + 1], "");
         }
 
-        if (stop - start == 2 || indexOfOpenBracket - start > 1) {
-            int delimiterIndex = Utils.findIndexOfSymbolInString(arg, start + 1, List.of(".", "_"));
+        int delimiterIndex = Utils.findIndexOfSymbolInString(arg, start + 1, List.of(".", "_"));
 
-            if (delimiterIndex == -1) {
-                tableAndColumnName.put(arg[start + 1], "");
-            } else {
-                tableAndColumnName.put(arg[start + 1].substring(delimiterIndex + 1),
-                        arg[start + 1].substring(0, delimiterIndex));
-            }
+        if (delimiterIndex == -1) {
+            tableAndColumnName.put(arg[start + 1], "");
+        } else {
+            tableAndColumnName.put(arg[start + 1].substring(delimiterIndex + 1),
+                    arg[start + 1].substring(0, delimiterIndex));
         }
         column.setAlias(alias);
         column.setTableAndColumnName(tableAndColumnName);

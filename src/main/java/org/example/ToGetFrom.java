@@ -12,21 +12,21 @@ public class ToGetFrom {
 
         int start = 0;
         for (Integer stop: indexOfComma) {
-            Source source = new Source();
+            Source source1 = new Source();
+            int indexOfOpenBracket = Utils.findIndexOfSymbol(arg, start, arg.length, "(");
 
             if (!arg[start + 1].equals("(")) {
-                if (stop - (start + 1) == 2) {
-                    source.setAlias(arg[start + 2]);
-                }
-                source.setTableName(arg[start + 1]);
+                source1.setAlias(Utils.returnAlias(arg, stop, start));
+                source1.setTableName(arg[start + 1]);
             }
 
-            fromSources.add(source);
+            fromSources.add(source1);
 
             if (stop - (start + 1) > 2) {
-                int indexOfOpenBracket = Utils.findIndexOfSymbol(arg, start, arg.length, "(");
-                Source source1 = (Source) Utils.prepareColumnSourceWithNestedQuery(arg, indexOfOpenBracket, arg.length);
-                fromSources.add(source1);
+                Source source2 = new Source();
+                source2.setIndexOfNestedQuery(Utils.returnIndexOfNestedQuery(arg, indexOfOpenBracket));
+                source2.setAlias(Utils.returnAlias(arg, indexOfOpenBracket, arg.length));
+                fromSources.add(source2);
                 break;
             }
             start = stop;
